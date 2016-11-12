@@ -16,6 +16,9 @@
 		105A7A3D1DB89BB200755BD2 /* TweetTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 105A7A3C1DB89BB200755BD2 /* TweetTableViewController.swift */; };
 		108004431DC9B039003E4E28 /* WebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 108004421DC9B039003E4E28 /* WebViewController.swift */; };
 		108316841DC2E32D00DA7077 /* ImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 108316831DC2E32D00DA7077 /* ImageViewController.swift */; };
+		108A55601DCC6FE3005F2EAD /* MediaCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 108A555F1DCC6FE3005F2EAD /* MediaCollectionViewController.swift */; };
+		108A55621DCC8678005F2EAD /* MediaCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 108A55611DCC8678005F2EAD /* MediaCollectionViewCell.swift */; };
+		108A55661DD45BD3005F2EAD /* ImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 108A55651DD45BD3005F2EAD /* ImageCache.swift */; };
 		10FB05311DB8A0D0004C7620 /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10FB05301DB8A0D0004C7620 /* Twitter.framework */; };
 		10FB05331DB8B576004C7620 /* TweetTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10FB05321DB8B576004C7620 /* TweetTableViewCell.swift */; };
 		10FB05371DBA563F004C7620 /* MentionsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10FB05361DBA563F004C7620 /* MentionsTableViewCell.swift */; };
@@ -34,6 +37,9 @@
 		105A7A3C1DB89BB200755BD2 /* TweetTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TweetTableViewController.swift; sourceTree = "<group>"; };
 		108004421DC9B039003E4E28 /* WebViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebViewController.swift; sourceTree = "<group>"; };
 		108316831DC2E32D00DA7077 /* ImageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageViewController.swift; sourceTree = "<group>"; };
+		108A555F1DCC6FE3005F2EAD /* MediaCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaCollectionViewController.swift; sourceTree = "<group>"; };
+		108A55611DCC8678005F2EAD /* MediaCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaCollectionViewCell.swift; sourceTree = "<group>"; };
+		108A55651DD45BD3005F2EAD /* ImageCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageCache.swift; sourceTree = "<group>"; };
 		10FB05301DB8A0D0004C7620 /* Twitter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Twitter.framework; path = "../../../Library/Developer/Xcode/DerivedData/Smashtag_L9-czvynljrpczujoetjvdpzhwrpwjk/Build/Products/Debug-iphoneos/Twitter.framework"; sourceTree = "<group>"; };
 		10FB05321DB8B576004C7620 /* TweetTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TweetTableViewCell.swift; sourceTree = "<group>"; };
 		10FB05361DBA563F004C7620 /* MentionsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MentionsTableViewCell.swift; sourceTree = "<group>"; };
@@ -81,6 +87,9 @@
 				108004421DC9B039003E4E28 /* WebViewController.swift */,
 				10589F1E1DC702660054E8A2 /* RecentSearch.swift */,
 				10589F221DC726410054E8A2 /* RecentSearchTableViewController.swift */,
+				108A555F1DCC6FE3005F2EAD /* MediaCollectionViewController.swift */,
+				108A55611DCC8678005F2EAD /* MediaCollectionViewCell.swift */,
+				108A55651DD45BD3005F2EAD /* ImageCache.swift */,
 				105A7A3B1DB89B4800755BD2 /* Supporting Files */,
 			);
 			path = Smashtag;
@@ -174,8 +183,11 @@
 				10FB05371DBA563F004C7620 /* MentionsTableViewCell.swift in Sources */,
 				10FB05391DBA568F004C7620 /* MentionsTableViewController.swift in Sources */,
 				10589F1F1DC702660054E8A2 /* RecentSearch.swift in Sources */,
+				108A55661DD45BD3005F2EAD /* ImageCache.swift in Sources */,
+				108A55601DCC6FE3005F2EAD /* MediaCollectionViewController.swift in Sources */,
 				108316841DC2E32D00DA7077 /* ImageViewController.swift in Sources */,
 				10589F231DC726410054E8A2 /* RecentSearchTableViewController.swift in Sources */,
+				108A55621DCC8678005F2EAD /* MediaCollectionViewCell.swift in Sources */,
 				10FB05331DB8B576004C7620 /* TweetTableViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

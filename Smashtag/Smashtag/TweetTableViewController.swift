@@ -14,7 +14,7 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate {
     @IBOutlet weak var spinner: UIActivityIndicatorView!
     
     // MARK: model
-    var tweets = [Array<Twitter.Tweet>]() {// array of array of tweet
+    private var tweets = [Array<Twitter.Tweet>]() {// array of array of tweet // [tweet]
         didSet {
             tableView.reloadData()
         }
@@ -102,6 +102,8 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate {
 
     private struct Storyboard {
         static let TweetCellIdentifier = "Tweet"
+        static let MentionsSegueIdentifier = "show mentions"
+        static let ImagesSegueIdentifier = "show images"
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -136,9 +138,25 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate {
      override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
      // Get the new view controller using segue.destinationViewController.
      // Pass the selected object to the new view controller.
-        if let destination = segue.destinationViewController as? MentionsTableViewController {
-            if let cell = sender as? TweetTableViewCell {
-                destination.tweet = cell.tweet
+        if segue.identifier == Storyboard.MentionsSegueIdentifier {
+            if let destination = segue.destinationViewController as? MentionsTableViewController {
+                if let cell = sender as? TweetTableViewCell {
+                    destination.tweet = cell.tweet
+                }
+            }
+
+        }
+        if segue.identifier == Storyboard.ImagesSegueIdentifier {
+            if let destination = segue.destinationViewController as? MediaCollectionViewController{
+                var tweetList = [Tweet]()
+                for tweetByOneUser in tweets {
+                    for tweet in tweetByOneUser {
+                        if tweet.media.count > 0 {
+                            tweetList.append(tweet)
+                        }
+                    }
+                }
+                destination.tweetList = tweetList
             }
         }
     }

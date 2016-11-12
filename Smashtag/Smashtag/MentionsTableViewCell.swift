@@ -16,31 +16,15 @@ class MentionsTableViewCell: UITableViewCell {
     
     var imageURL: NSURL? {
         didSet {
-            updateUI()
-        }
-    }
-    
-    
-    private func updateUI()
-    {
-        // reset any existing tweet information
-        mediaImageView?.image = nil
-        if let url = imageURL {
+            //updateUI()
+            mediaImageView?.image = nil
             spinner?.startAnimating()
-            dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0)) {
-                let imageData = NSData(contentsOfURL: url)
-                dispatch_async(dispatch_get_main_queue()) {
-                    if url == self.imageURL {
-                        if imageData != nil {
-                            self.mediaImageView?.image = UIImage(data: imageData!)
-                        }
-                    }
-                    self.spinner?.stopAnimating()
-                }
+            ImageCache.sharedInstance.getImageByURL(imageURL!) {
+                (image: UIImage?) in self.mediaImageView.image = image
+                self.spinner?.stopAnimating()
             }
+
         }
     }
-    
-    
     
 }
