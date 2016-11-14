@@ -11,7 +11,7 @@ import Twitter
 
 private let reuseIdentifier = "media cell"
 
-class MediaCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
+class MediaCollectionViewController: UICollectionViewController{
     
     
     // MARK: model
@@ -57,7 +57,6 @@ class MediaCollectionViewController: UICollectionViewController, UICollectionVie
         return 1
     }
 
-
     override func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of items
         return imageList.count
@@ -65,53 +64,8 @@ class MediaCollectionViewController: UICollectionViewController, UICollectionVie
 
     override func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier(reuseIdentifier, forIndexPath: indexPath) as! MediaCollectionViewCell
-    
         cell.mediaItem = imageList[indexPath.item].media
-    
         return cell
-    }
-    
-
-    // MARK: UICollectionViewDelegateFlowLayout
-    private struct Constants {
-        //static let imageMaxLength = 180.0
-        static let bigImageCountPerPortraitRow = 2
-        static let bigImageCountPerLandScapeRow = 3
-        //static let smallImageCountPerPortraitRow = 3
-        //static let smallImageCountPerLandScapeRow = 4
-    }
-    
-    private var currentOrient: UIInterfaceOrientation {
-        return UIApplication.sharedApplication().statusBarOrientation
-    }
-
-    private var imageWidth: CGFloat {
-        var count = currentOrient.isLandscape ? Constants.bigImageCountPerLandScapeRow : Constants.bigImageCountPerPortraitRow
-        count += isSmallImages ? 1 : 0
-        let spacing = (collectionViewLayout as? UICollectionViewFlowLayout)?.minimumInteritemSpacing
-        let offset: CGFloat = 0.1 // without offset, sometimes can not show 3 images in a row, maybe is the problem of 'float calculate'
-        
-        //print("is landscape \(currentOrient.isLandscape) bounds.size = \(view.bounds.size) count=\(count)")
-        /* if orientation changed while showing other form, collectionView() will run
-         1. open MediacollectionView at tab "search"
-            collectionView() run, status: --is landscape false bounds.size = (414.0, 736.0) count=2
-         2. at tab "recents" change orientation
-            collectionView() run, status: --is landscape true  bounds.size = (414.0, 736.0) count=3
-         
-        Note: orientation is from "portrait" to "lnadscape", however bounds.size have not changed
-         so, width should be min(width,height) in portrait while be max(width,height) in landscape
-        */
-        let bounds = collectionView!.bounds
-        let calculatedWidth = currentOrient.isLandscape ? max(bounds.width, bounds.height) : min(bounds.width, bounds.height)
-
-        return (calculatedWidth - spacing! * CGFloat(count - 1) - offset) / CGFloat(count)
-    }
-    
-    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
-        let ratio = imageList[indexPath.item].media.aspectRatio
-        let width = imageWidth
-               let height = width / CGFloat(ratio)
-        return CGSizeMake(width, height)
     }
     
     // MARK: resize layout
@@ -119,19 +73,27 @@ class MediaCollectionViewController: UICollectionViewController, UICollectionVie
         super.viewWillTransitionToSize(size, withTransitionCoordinator: coordinator)
         //Change UICollectionViewCell size on different device orientations
         coordinator.animateAlongsideTransition(
-            { _ in self.collectionView?.performBatchUpdates(nil, completion: nil) },
+            { _ in self.refreshLayout(); print("change size") },
             completion: nil
         )
     }
     
-    // MARK: Scroll view
-    // zoom in show less pictures (landscape: 3 Portrait: 2), but the size of each image becomes bigger
-    // zoom out show more pictures (landscape: 4 portrait: 3), but the size of each image becomes smaller
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        // MARK: Scroll view
         collectionView!.addGestureRecognizer(UIPinchGestureRecognizer(target: self, action: #selector(self.changeScale(_:))))
+        // MARK: photo flow
+        if let layout = collectionView?.collectionViewLayout as? ImageFlowViewLayout {
+            layout.delegate = self
+            layout.numberOfColumns = numberOfColumns
+        }
     }
+    
+    
+    // MARK: Scroll view
+    // zoom in show less pictures (landscape: 3 Portrait: 2), but the size of each image becomes bigger
+    // zoom out show more pictures (landscape: 4 portrait: 3), but the size of each image becomes smaller
     
     func changeScale(recognizer: UIPinchGestureRecognizer) {
         switch recognizer.state {
@@ -140,7 +102,9 @@ class MediaCollectionViewController: UICollectionViewController, UICollectionVie
             let showMoreImages = recognizer.scale < 1
             if ((showMoreImages == true) && (isSmallImages == false)) || ((showMoreImages == false) && (isSmallImages == true)) {
                 isSmallImages = !isSmallImages
-                collectionView?.performBatchUpdates(nil, completion: nil)
+                //collectionView?.performBatchUpdates(nil, completion: nil)
+                //collectionView?.reloadData()
+                refreshLayout()
             }
             recognizer.scale = 1.0
         default: break
@@ -148,5 +112,38 @@ class MediaCollectionViewController: UICollectionViewController, UICollectionVie
     }
     
     private var isSmallImages = false // show more image means zoom out the image
+    
+    private func refreshLayout() {
+        (collectionViewLayout as? ImageFlowViewLayout)?.numberOfColumns = numberOfColumns
+        collectionView?.reloadData()
+    }
+    
+    private struct Constants {
+        //static let imageMaxLength = 180.0
+        static let bigImageCountPerPortraitRow = 2
+        static let bigImageCountPerLandScapeRow = 3
+        //static let smallImageCountPerPortraitRow = 3
+        //static let smallImageCountPerLandScapeRow = 4
+    }
+    
+    // how many images per row
+    private var numberOfColumns: Int {
+        let currentOrient = UIApplication.sharedApplication().statusBarOrientation
+        var count = currentOrient.isLandscape ? Constants.bigImageCountPerLandScapeRow : Constants.bigImageCountPerPortraitRow
+        count += isSmallImages ? 1 : 0
+        return count
+    }
+
+}
+
+// MARK: image flow
+extension MediaCollectionViewController: ImageFlowViewLayoutDelegate {
+    
+    func collectionView(collectionView:UICollectionView, heightForPhotoAtIndexPath indexPath: NSIndexPath,
+                        withWidth width: CGFloat) -> CGFloat {
+        let ratio = imageList[indexPath.item].media.aspectRatio
+        let height = width / CGFloat(ratio)
+        return height
+    }
     
 }
