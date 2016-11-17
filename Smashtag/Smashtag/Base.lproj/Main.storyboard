@@ -147,17 +147,25 @@
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <refreshControl key="refreshControl" opaque="NO" multipleTouchEnabled="YES" contentMode="center" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="Act-XN-3cT">
+                        <autoresizingMask key="autoresizingMask"/>
+                        <attributedString key="attributedTitle">
+                            <fragment content="Fetching Tweets ...">
+                                <attributes>
+                                    <font key="NSFont" size="18" name=".AppleSystemUIFont"/>
+                                    <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                </attributes>
+                            </fragment>
+                        </attributedString>
+                        <connections>
+                            <action selector="refresh:" destination="LNs-HR-gjW" eventType="valueChanged" id="FZk-lo-tWk"/>
+                        </connections>
+                    </refreshControl>
                     <connections>
                         <outlet property="searchTextField" destination="x8g-P7-y7H" id="sw7-xz-tVg"/>
-                        <outlet property="spinner" destination="aQW-Yb-IHs" id="xc4-JT-XKk"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0vX-6a-3sn" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="whiteLarge" id="aQW-Yb-IHs" userLabel="Spinner">
-                    <rect key="frame" x="0.0" y="0.0" width="600" height="37"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <color key="color" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                </activityIndicatorView>
             </objects>
             <point key="canvasLocation" x="1933" y="349"/>
         </scene>
@@ -417,7 +425,7 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
+        <segue reference="1JZ-n0-Iiv"/>
         <segue reference="ZKg-RU-q96"/>
-        <segue reference="BBN-Ei-qdD"/>
     </inferredMetricsTieBreakers>
 </document>

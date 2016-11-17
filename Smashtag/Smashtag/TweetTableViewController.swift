@@ -11,8 +11,6 @@ import Twitter
 
 class TweetTableViewController: UITableViewController, UITextFieldDelegate {
 
-    @IBOutlet weak var spinner: UIActivityIndicatorView!
-    
     // MARK: model
     private var tweets = [Array<Twitter.Tweet>]() {// array of array of tweet // [tweet]
         didSet {
@@ -26,35 +24,44 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate {
                 return
             }
             tweets.removeAll()
+            lastTwitterRequest = nil
             searchForTweets()
             title = searchText
             RecentSearch.add(text)
         }
     }
     
+   
+    // MARK: Constants
     private struct Constants {
         static let numberOfTweets = 100
     }
-
+   
+    // MARK: Fetching Tweets
     private var twitterRequest: Twitter.Request? {
-        if let query = searchText where !query.isEmpty {
-            //When you click on a user in the Users section, search not only for Tweets that mention that user, but also for Tweets which were posted by that user.
-            //https://twitter.com/search-home#
-            var searchKeyword = query
-            if query.hasPrefix("@") {
-                searchKeyword = query.stringByTrimmingCharactersInSet(NSCharacterSet(charactersInString: "@"))
-                searchKeyword = "from:\(searchKeyword)  \(query)" // it seems no work, is twitter.app's problem?
+        if lastTwitterRequest == nil {
+            if let query = searchText where !query.isEmpty {
+                //return Twitter.Request(search: query + " -filter:retweets", count: Constants.numberOfTweets)
+                //When you click on a user in the Users section, search not only for Tweets that mention that user, but also for Tweets which were posted by that user.
+                //https://twitter.com/search-home#
+                var searchKeyword = query
+                if query.hasPrefix("@") {
+                    searchKeyword = query.stringByTrimmingCharactersInSet(NSCharacterSet(charactersInString: "@"))
+                    searchKeyword = "from:\(searchKeyword) OR \(query)"
+                    //print(searchKeyword)
+                }
+                return Twitter.Request(search: searchKeyword + " -filter:retweets", count: Constants.numberOfTweets)
             }
-            return Twitter.Request(search: searchKeyword + " -filter:retweets", count: Constants.numberOfTweets)
         }
-        return nil
+        return lastTwitterRequest?.requestForNewer
+        
     }
     
     private var lastTwitterRequest: Twitter.Request?
     
     private func searchForTweets() {
         if let request = twitterRequest {
-            spinner?.startAnimating()
+            refreshControl?.beginRefreshing()
             lastTwitterRequest = request
             request.fetchTweets { [weak weakSelf = self] newTweets in
                 dispatch_async(dispatch_get_main_queue()) {
@@ -63,17 +70,23 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate {
                             weakSelf?.tweets.insert(newTweets, atIndex: 0)
                         }
                     }
-                    self.spinner?.stopAnimating()
+                    self.refreshControl?.endRefreshing()
                 }
             }
+        } else {
+            self.refreshControl?.endRefreshing()
         }
     }
     
+    @IBAction func refresh(sender: UIRefreshControl) {
+        searchForTweets()
+    }
+    
+    // MARK: View Controller Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.estimatedRowHeight = tableView.rowHeight
         tableView.rowHeight = UITableViewAutomaticDimension
-        view.addSubview(spinner)
         title = "Twitter Search"
         //first run
         if searchTextField.text?.isEmpty == true {
@@ -82,14 +95,8 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate {
         }
     }
     
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-        //bounds (max - min) / 2 = mid = center - min
-        spinner.center = CGPointMake(view.bounds.midX, view.bounds.midY)
-    }
-
     // MARK: - Table view data source
-
+    
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
         return tweets.count
@@ -100,11 +107,6 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate {
         return tweets[section].count
     }
 
-    private struct Storyboard {
-        static let TweetCellIdentifier = "Tweet"
-        static let MentionsSegueIdentifier = "show mentions"
-        static let ImagesSegueIdentifier = "show images"
-    }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier(Storyboard.TweetCellIdentifier, forIndexPath: indexPath)
@@ -117,6 +119,14 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate {
         return cell
     }
     
+    // MARK: constants
+    private struct Storyboard {
+        static let TweetCellIdentifier = "Tweet"
+        static let MentionsSegueIdentifier = "show mentions"
+        static let ImagesSegueIdentifier = "show images"
+    }
+
+    // MARK: outlets
     @IBOutlet weak var searchTextField: UITextField! {
         didSet {
             searchTextField.delegate = self
@@ -124,14 +134,13 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate {
         }
     }
     
+    // MARK: UITextFieldDelegte
     func textFieldShouldReturn(textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         searchText = textField.text
         return true
     }
 
-    
-    
      // MARK: - Navigation
      
      // In a storyboard-based application, you will often want to do a little preparation before navigation
