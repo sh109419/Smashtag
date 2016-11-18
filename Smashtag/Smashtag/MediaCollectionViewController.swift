@@ -15,7 +15,7 @@ class MediaCollectionViewController: UICollectionViewController{
     
     
     // MARK: model
-    var tweetList = [Tweet]() {
+    var tweetList: [Twitter.Tweet] = [] {
         didSet {
             var index = 0
             for tweet in tweetList {

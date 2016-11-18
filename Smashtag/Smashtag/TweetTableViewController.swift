@@ -8,10 +8,13 @@
 
 import UIKit
 import Twitter
+import CoreData
 
 class TweetTableViewController: UITableViewController, UITextFieldDelegate {
 
     // MARK: model
+    var managedObjectContext: NSManagedObjectContext? = (UIApplication.sharedApplication().delegate as? AppDelegate)?.managedObjectContext
+    
     private var tweets = [Array<Twitter.Tweet>]() {// array of array of tweet // [tweet]
         didSet {
             tableView.reloadData()
@@ -68,6 +71,7 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate {
                     if request == weakSelf?.lastTwitterRequest {
                         if !newTweets.isEmpty {
                             weakSelf?.tweets.insert(newTweets, atIndex: 0)
+                            weakSelf?.updateDatabase(newTweets)
                         }
                     }
                     self.refreshControl?.endRefreshing()
@@ -77,6 +81,33 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate {
             self.refreshControl?.endRefreshing()
         }
     }
+    
+    // add the Twitter.Tweets to our database
+    private func updateDatabase(newTweets: [Twitter.Tweet]) {
+        managedObjectContext?.performBlock {
+            for twitterInfo in newTweets {
+                _ = Tweet.tweetWithTwitterInfo(twitterInfo, inManagedObjectContext: self.managedObjectContext!)
+            }
+            do {
+                try self.managedObjectContext?.save()
+            } catch let error {
+                print("Core Data Error: \(error)")
+            }
+        }
+        printDatabaseStatistics()
+        print("done printing database statistics")
+    }
+
+    private func printDatabaseStatistics() {
+        managedObjectContext?.performBlock {
+            if let results = try? self.managedObjectContext!.executeFetchRequest(NSFetchRequest(entityName: "TwitterUser")) {
+                print("\(results.count) TwitterUsers")
+            }
+            let tweetCount = self.managedObjectContext!.countForFetchRequest(NSFetchRequest(entityName: "Tweet"), error: nil)
+            print("\(tweetCount) Tweets")
+        }
+    }
+    
     
     @IBAction func refresh(sender: UIRefreshControl) {
         searchForTweets()
@@ -147,6 +178,14 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate {
      override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
      // Get the new view controller using segue.destinationViewController.
      // Pass the selected object to the new view controller.
+        if segue.identifier == "segue to tweeters" {
+            if let tweetersTVC = segue.destinationViewController as? TweetersTableViewController {
+                tweetersTVC.mention = searchText
+                tweetersTVC.managedObjectContext = managedObjectContext
+            }
+
+        }
+        
         if segue.identifier == Storyboard.MentionsSegueIdentifier {
             if let destination = segue.destinationViewController as? MentionsTableViewController {
                 if let cell = sender as? TweetTableViewCell {
@@ -157,7 +196,7 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate {
         }
         if segue.identifier == Storyboard.ImagesSegueIdentifier {
             if let destination = segue.destinationViewController as? MediaCollectionViewController{
-                var tweetList = [Tweet]()
+                var tweetList: [Twitter.Tweet] = []
                 for tweetByOneUser in tweets {
                     for tweet in tweetByOneUser {
                         if tweet.media.count > 0 {

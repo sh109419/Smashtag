@@ -37,16 +37,6 @@ class RecentSearchTableViewController: UITableViewController {
         return cell
     }
  
-
-    /*
-    // Override to support conditional editing of the table view.
-    override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
-        return true
-    }
-    */
-
-    
     // Override to support editing the table view.
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         if editingStyle == .Delete {
@@ -58,21 +48,10 @@ class RecentSearchTableViewController: UITableViewController {
         }    
     }
 
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(tableView: UITableView, moveRowAtIndexPath fromIndexPath: NSIndexPath, toIndexPath: NSIndexPath) {
-
+    private struct Storyboard {
+        static let ShowMentionDetailSegueIdentifier = "show mention detail"
+        static let SearchMentionAgainsegueIdentifier = "search mention again"
     }
-    */
-
-    /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-        // Return false if you do not want the item to be re-orderable.
-        return true
-    }
-    */
-
     
     // MARK: - Navigation
 
@@ -80,9 +59,19 @@ class RecentSearchTableViewController: UITableViewController {
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
-        if let destination = segue.destinationViewController as? TweetTableViewController {
-            if let cell = sender as? UITableViewCell {
-                destination.searchText = cell.textLabel?.text
+        if segue.identifier == Storyboard.SearchMentionAgainsegueIdentifier {
+            if let destination = segue.destinationViewController as? TweetTableViewController {
+                if let cell = sender as? UITableViewCell {
+                    destination.searchText = cell.textLabel?.text
+                }
+            }
+        }
+        if segue.identifier == Storyboard.ShowMentionDetailSegueIdentifier {
+            print("show detail")
+            if let destination = segue.destinationViewController as? UITableViewController {
+                if let cell = sender as? UITableViewCell {
+                    destination.title = cell.textLabel?.text
+                }
             }
         }
         

@@ -114,7 +114,7 @@ class TweetTableViewCell: UITableViewCell {
     }
 */
     
-    private func getColorfulAttributedText(tweet: Tweet, plainText: String) -> NSAttributedString {
+    private func getColorfulAttributedText(tweet: Twitter.Tweet, plainText: String) -> NSAttributedString {
         let attributedString = NSMutableAttributedString(string: plainText)
         attributedString.setMentionsColor(tweet.userMentions, color: MentionColor.user)
         attributedString.setMentionsColor(tweet.hashtags, color: MentionColor.hashtag)
