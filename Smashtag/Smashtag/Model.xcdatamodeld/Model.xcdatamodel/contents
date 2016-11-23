@@ -9,10 +9,11 @@
     <entity name="TwitterUser" representedClassName=".TwitterUser" syncable="YES">
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="screenName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="tweetCount" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <relationship name="tweets" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tweet" inverseName="tweeter" inverseEntity="Tweet" syncable="YES"/>
     </entity>
     <elements>
         <element name="Tweet" positionX="-4277" positionY="608" width="128" height="103"/>
-        <element name="TwitterUser" positionX="-4464" positionY="503" width="128" height="88"/>
+        <element name="TwitterUser" positionX="-4464" positionY="503" width="128" height="103"/>
     </elements>
 </model>

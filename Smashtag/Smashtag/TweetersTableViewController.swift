@@ -17,17 +17,26 @@ class TweetersTableViewController: CoreDataTableViewController {
         if let context = managedObjectContext where mention?.characters.count > 0 {
             let request = NSFetchRequest(entityName: "TwitterUser")
             request.predicate = NSPredicate(format: "any tweets.text contains[c] %@ and !screenName beginswith[c] %@", mention!, "darkside")
-            request.sortDescriptors = [NSSortDescriptor(
+            let tweetCountSort = NSSortDescriptor(
+                key: "tweetCount",
+                ascending: false
+            )
+            let tweetUserSort = NSSortDescriptor(
                 key: "screenName",
                 ascending: true,
                 selector: #selector(NSString.localizedCaseInsensitiveCompare(_:))
-            )]
+            )
+            request.sortDescriptors = [tweetCountSort, tweetUserSort]
             fetchedResultsController = NSFetchedResultsController(
                 fetchRequest: request,
                 managedObjectContext: context,
                 sectionNameKeyPath: nil,
                 cacheName: nil
             )
+            //fetchResults.allObjects.sort({ $0.displayOrder.integerValue > $1.displayOrder.integerValue })
+           // fetchedResultsController?.fetchedObjects!.sort({$0.tweet.count})
+           // sortedArrayUsingDescriptor
+            
         } else {
             fetchedResultsController = nil
         }
@@ -55,6 +64,7 @@ class TweetersTableViewController: CoreDataTableViewController {
             } else {
                 cell.detailTextLabel?.text = ""
             }
+            cell.detailTextLabel?.text = (cell.detailTextLabel?.text)! + "\(twitterUser.tweetCount)"
         }
         return cell
     }

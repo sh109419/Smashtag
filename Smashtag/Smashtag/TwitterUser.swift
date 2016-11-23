@@ -21,10 +21,14 @@ class TwitterUser: NSManagedObject {
         let request = NSFetchRequest(entityName: "TwitterUser")
         request.predicate = NSPredicate(format: "screenName = %@", twitterInfo.screenName)
         if let twitterUser = (try? context.executeFetchRequest(request))?.first as? TwitterUser {
+            let count = twitterUser.tweetCount?.integerValue ?? 0
+            twitterUser.tweetCount = NSNumber(integer: count + 1)
             return twitterUser
         } else if let twitterUser = NSEntityDescription.insertNewObjectForEntityForName("TwitterUser", inManagedObjectContext: context) as? TwitterUser {
             twitterUser.screenName = twitterInfo.screenName
             twitterUser.name = twitterInfo.name
+            let count = twitterUser.tweetCount?.integerValue ?? 0
+            twitterUser.tweetCount = NSNumber(integer: count + 1)
             return twitterUser
         }
         
