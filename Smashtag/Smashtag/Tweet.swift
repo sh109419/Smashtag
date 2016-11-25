@@ -17,17 +17,27 @@ class Tweet: NSManagedObject {
     // returns a Tweet from the database if Twitter.Tweet has already been put in
     // or returns a newly-added-to-the-database Tweet if not
     
-    class func tweetWithTwitterInfo(twitterInfo: Twitter.Tweet, inManagedObjectContext context: NSManagedObjectContext) -> Tweet? {
+    // the primary key is searchTerm + unique
+    
+    class func tweetWithTwitterInfo(searchTerm: String, twitterInfo: Twitter.Tweet, inManagedObjectContext context: NSManagedObjectContext) -> Tweet? {
         let request = NSFetchRequest(entityName: "Tweet")
-        request.predicate = NSPredicate(format: "unique = %@", twitterInfo.id)
+        request.predicate = NSPredicate(format: "searchTerm =[c] %@ and unique = %@", searchTerm, twitterInfo.id)
         
         if let tweet = (try? context.executeFetchRequest(request))?.first as? Tweet {
             return tweet
         } else if let tweet = NSEntityDescription.insertNewObjectForEntityForName("Tweet", inManagedObjectContext: context) as? Tweet {
+            tweet.searchTerm = searchTerm
             tweet.unique = twitterInfo.id
             tweet.text = twitterInfo.text
-            tweet.posted = twitterInfo.created
-            tweet.tweeter = TwitterUser.twitterUserWithTwitterInfo(twitterInfo.user, inManagedObjectContext: context)
+            // reset set of mentions
+            let mentionsRelation = NSMutableSet()
+            let mentions = twitterInfo.hashtags + twitterInfo.userMentions
+            for mention in mentions {
+                if let newMention = Mention.mentionWithTwitterInfo(searchTerm, twitterInfo: mention, inManagedObjectContext: context) {
+                    mentionsRelation.addObject(newMention)
+                }
+            }
+            tweet.mentions = mentionsRelation
             return tweet
         }
         

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 
 class RecentSearchTableViewController: UITableViewController {
     
@@ -50,7 +51,7 @@ class RecentSearchTableViewController: UITableViewController {
 
     private struct Storyboard {
         static let ShowMentionDetailSegueIdentifier = "show mention detail"
-        static let SearchMentionAgainsegueIdentifier = "search mention again"
+        static let SearchMentionAgainSegueIdentifier = "search mention again"
     }
     
     // MARK: - Navigation
@@ -59,7 +60,7 @@ class RecentSearchTableViewController: UITableViewController {
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
-        if segue.identifier == Storyboard.SearchMentionAgainsegueIdentifier {
+        if segue.identifier == Storyboard.SearchMentionAgainSegueIdentifier {
             if let destination = segue.destinationViewController as? TweetTableViewController {
                 if let cell = sender as? UITableViewCell {
                     destination.searchText = cell.textLabel?.text
@@ -67,14 +68,16 @@ class RecentSearchTableViewController: UITableViewController {
             }
         }
         if segue.identifier == Storyboard.ShowMentionDetailSegueIdentifier {
-            print("show detail")
-            if let destination = segue.destinationViewController as? UITableViewController {
+            if let tweetersTVC = segue.destinationViewController as? TweetersTableViewController {
                 if let cell = sender as? UITableViewCell {
-                    destination.title = cell.textLabel?.text
+                    tweetersTVC.searchTerm = cell.textLabel?.text
                 }
+                 let managedObjectContext: NSManagedObjectContext? = (UIApplication.sharedApplication().delegate as? AppDelegate)?.managedObjectContext
+                tweetersTVC.managedObjectContext = managedObjectContext
             }
+            
         }
-        
+
     }
 
     

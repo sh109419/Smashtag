@@ -86,7 +86,7 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate {
     private func updateDatabase(newTweets: [Twitter.Tweet]) {
         managedObjectContext?.performBlock {
             for twitterInfo in newTweets {
-                _ = Tweet.tweetWithTwitterInfo(twitterInfo, inManagedObjectContext: self.managedObjectContext!)
+                _ = Tweet.tweetWithTwitterInfo(self.searchText!, twitterInfo: twitterInfo, inManagedObjectContext: self.managedObjectContext!)
             }
             do {
                 try self.managedObjectContext?.save()
@@ -100,8 +100,8 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate {
 
     private func printDatabaseStatistics() {
         managedObjectContext?.performBlock {
-            if let results = try? self.managedObjectContext!.executeFetchRequest(NSFetchRequest(entityName: "TwitterUser")) {
-                print("\(results.count) TwitterUsers")
+            if let results = try? self.managedObjectContext!.executeFetchRequest(NSFetchRequest(entityName: "Mention")) {
+                print("\(results.count) TwitterMentions")
             }
             let tweetCount = self.managedObjectContext!.countForFetchRequest(NSFetchRequest(entityName: "Tweet"), error: nil)
             print("\(tweetCount) Tweets")
@@ -178,14 +178,7 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate {
      override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
      // Get the new view controller using segue.destinationViewController.
      // Pass the selected object to the new view controller.
-        if segue.identifier == "segue to tweeters" {
-            if let tweetersTVC = segue.destinationViewController as? TweetersTableViewController {
-                tweetersTVC.mention = searchText
-                tweetersTVC.managedObjectContext = managedObjectContext
-            }
-
-        }
-        
+               
         if segue.identifier == Storyboard.MentionsSegueIdentifier {
             if let destination = segue.destinationViewController as? MentionsTableViewController {
                 if let cell = sender as? TweetTableViewCell {

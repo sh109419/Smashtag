@@ -1,8 +1,8 @@
 //
-//  TwitterUser+CoreDataProperties.swift
+//  Mention+CoreDataProperties.swift
 //  Smashtag
 //
-//  Created by hyf on 16/11/21.
+//  Created by hyf on 16/11/24.
 //  Copyright © 2016年 hyf. All rights reserved.
 //
 //  Choose "Create NSManagedObject Subclass…" from the Core Data editor menu
@@ -12,11 +12,13 @@
 import Foundation
 import CoreData
 
-extension TwitterUser {
+extension Mention {
 
-    @NSManaged var name: String?
-    @NSManaged var screenName: String?
+    @NSManaged var keyWord: String?
+    @NSManaged var keyWordWithoutPrefix: String?
     @NSManaged var tweetCount: NSNumber?
+    @NSManaged var searchTerm: String?
+    @NSManaged var prefix: String?
     @NSManaged var tweets: NSSet?
 
 }

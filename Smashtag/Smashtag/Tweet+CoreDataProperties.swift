@@ -2,7 +2,7 @@
 //  Tweet+CoreDataProperties.swift
 //  Smashtag
 //
-//  Created by hyf on 16/11/17.
+//  Created by hyf on 16/11/24.
 //  Copyright © 2016年 hyf. All rights reserved.
 //
 //  Choose "Create NSManagedObject Subclass…" from the Core Data editor menu
@@ -14,9 +14,9 @@ import CoreData
 
 extension Tweet {
 
-    @NSManaged var posted: NSDate?
     @NSManaged var text: String?
     @NSManaged var unique: String?
-    @NSManaged var tweeter: TwitterUser?
+    @NSManaged var searchTerm: String?
+    @NSManaged var mentions: NSSet?
 
 }
