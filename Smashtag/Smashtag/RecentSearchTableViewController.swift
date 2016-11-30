@@ -72,7 +72,7 @@ class RecentSearchTableViewController: UITableViewController {
                 if let cell = sender as? UITableViewCell {
                     tweetersTVC.searchTerm = cell.textLabel?.text
                 }
-                 let managedObjectContext: NSManagedObjectContext? = (UIApplication.sharedApplication().delegate as? AppDelegate)?.managedObjectContext
+                 let managedObjectContext: NSManagedObjectContext? = (UIApplication.sharedApplication().delegate as? AppDelegate)?.document.managedObjectContext
                 tweetersTVC.managedObjectContext = managedObjectContext
             }
             

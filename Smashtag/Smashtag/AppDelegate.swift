@@ -13,10 +13,13 @@ import CoreData
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-
-
+   
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
+     
+        document = documentInstance()
+        openDocument()
+        
         return true
     }
 
@@ -42,8 +45,59 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
     
-    // MARK: - Core Data stack
+    // MARK: - UIManagementDocument
+    var document: UIManagedDocument!
     
+    //creates the UIManagedDocument instance
+    func documentInstance() -> UIManagedDocument {
+        var document: UIManagedDocument?
+        
+        let fm = NSFileManager.defaultManager()
+        if let docsDir = fm.URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first {
+            let url = docsDir.URLByAppendingPathComponent("MyDocumentName")
+            document = UIManagedDocument(fileURL: url)
+        }
+        return document!
+    }
+    
+    // open or create a UIManagedDocument
+    func openDocument() {
+        
+        //Before you use a UIManagedDocument, you have to check to see if it’s open or not.
+        //If it is already open (in the .Normal state), you are good to go using the managedObjectContext
+        if document.documentState == .Normal {
+            print("document is opend")
+        }
+        //If it’s .Closed, need to open/create documen
+        if document.documentState == .Closed {
+            //... you need to open (or create) it.
+            //To do that, check to see if the UIManagedDocument’s underlying file exists on disk ...
+            let path = document.fileURL.path
+            let fileExists = NSFileManager.defaultManager().fileExistsAtPath(path!)
+            if fileExists {
+                //... if it does exist, open the document using ...
+                document.openWithCompletionHandler { (success: Bool) in
+                    if (success) {
+                        print("open success")
+                    } else {
+                        print("open failed")
+                    }
+                }
+            } else {
+                //... if it does not exist, create the document using ...
+                document.saveToURL(document.fileURL, forSaveOperation: .ForCreating) { success in
+                    if (success) {
+                        print("create success")
+                    } else {
+                        print("create failed")
+                    }
+                }
+            }
+        }
+    }
+    
+    // MARK: - Core Data stack
+    /*
     lazy var applicationDocumentsDirectory: NSURL = {
         // The directory the application uses to store the Core Data store file. This code uses a directory named "edu.stanford.cs193p.instructor.Foo" in the application's documents Application Support directory.
         let urls = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)
@@ -103,7 +157,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 abort()
             }
         }
-    }
+    }*/
 
 
 }

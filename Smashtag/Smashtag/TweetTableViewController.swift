@@ -13,8 +13,6 @@ import CoreData
 class TweetTableViewController: UITableViewController, UITextFieldDelegate {
 
     // MARK: model
-    var managedObjectContext: NSManagedObjectContext? = (UIApplication.sharedApplication().delegate as? AppDelegate)?.managedObjectContext
-    
     private var tweets = [Array<Twitter.Tweet>]() {// array of array of tweet // [tweet]
         didSet {
             tableView.reloadData()
@@ -84,28 +82,41 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate {
     
     // add the Twitter.Tweets to our database
     private func updateDatabase(newTweets: [Twitter.Tweet]) {
+        let managedObjectContext: NSManagedObjectContext? = (UIApplication.sharedApplication().delegate as? AppDelegate)?.document.managedObjectContext
         managedObjectContext?.performBlock {
             for twitterInfo in newTweets {
-                _ = Tweet.tweetWithTwitterInfo(self.searchText!, twitterInfo: twitterInfo, inManagedObjectContext: self.managedObjectContext!)
+                _ = Tweet.tweetWithTwitterInfo(self.searchText!, twitterInfo: twitterInfo, inManagedObjectContext: managedObjectContext!)
             }
             do {
-                try self.managedObjectContext?.save()
+                try managedObjectContext?.save()
             } catch let error {
                 print("Core Data Error: \(error)")
             }
+            self.printDatabaseStatistics()
         }
-        printDatabaseStatistics()
+        //printDatabaseStatistics()
         print("done printing database statistics")
     }
 
     private func printDatabaseStatistics() {
-        managedObjectContext?.performBlock {
-            if let results = try? self.managedObjectContext!.executeFetchRequest(NSFetchRequest(entityName: "Mention")) {
+        let managedObjectContext: NSManagedObjectContext? = (UIApplication.sharedApplication().delegate as? AppDelegate)?.document.managedObjectContext
+        //managedObjectContext?.performBlock {
+            if let results = try? managedObjectContext!.executeFetchRequest(NSFetchRequest(entityName: "Mention")) {
                 print("\(results.count) TwitterMentions")
             }
-            let tweetCount = self.managedObjectContext!.countForFetchRequest(NSFetchRequest(entityName: "Tweet"), error: nil)
+            let tweetCount = managedObjectContext!.countForFetchRequest(NSFetchRequest(entityName: "Tweet"), error: nil)
             print("\(tweetCount) Tweets")
-        }
+            // show searchterms in database
+            let request = NSFetchRequest(entityName: "Tweet")
+            request.resultType = .DictionaryResultType
+            request.returnsDistinctResults = true
+            request.propertiesToFetch = ["searchTerm"]
+            if let results = try? managedObjectContext!.executeFetchRequest(request) {
+                for obj in results {
+                    print((obj as! NSDictionary).allValues)
+                }
+            }
+       // }
     }
     
     

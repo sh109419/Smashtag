@@ -27,7 +27,7 @@ class Mention: NSManagedObject {
             mention.searchTerm = searchTerm
             mention.keyWord = twitterInfo.keyword
             mention.keyWordWithoutPrefix = String(twitterInfo.keyword.characters.dropFirst())
-            mention.prefix = String(twitterInfo.keyword.characters.first)
+            mention.prefix = twitterInfo.keyword.substringToIndex(twitterInfo.keyword.startIndex.successor())
             mention.tweetCount = NSNumber(integer: 1)
             return mention
         }

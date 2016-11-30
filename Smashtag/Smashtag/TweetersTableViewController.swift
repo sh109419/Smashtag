@@ -26,11 +26,17 @@ class TweetersTableViewController: CoreDataTableViewController {
                 ascending: true,
                 selector: #selector(NSString.localizedCaseInsensitiveCompare(_:))
             )
-            request.sortDescriptors = [tweetCountSort, tweetMentionSort]
+            // for section
+            let tweetPrefixSort = NSSortDescriptor(
+                key: "prefix",
+                ascending: false
+            )
+
+            request.sortDescriptors = [tweetPrefixSort, tweetCountSort, tweetMentionSort]
             fetchedResultsController = NSFetchedResultsController(
                 fetchRequest: request,
                 managedObjectContext: context,
-                sectionNameKeyPath: nil,
+                sectionNameKeyPath: "prefix",
                 cacheName: nil
             )
         } else {
@@ -49,7 +55,7 @@ class TweetersTableViewController: CoreDataTableViewController {
             var mention: String?
             var count: Int?
             tweetMention.managedObjectContext?.performBlockAndWait {
-                mention = tweetMention.keyWord
+                mention = tweetMention.keyWord! + tweetMention.prefix!
                 count = tweetMention.tweetCount?.integerValue
             }
             cell.textLabel?.text = mention
@@ -61,4 +67,16 @@ class TweetersTableViewController: CoreDataTableViewController {
         return cell
     }
     
+    override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        if let sections = fetchedResultsController?.sections where sections.count > 0 {
+            if sections[section].name == "#" {
+                return "Hashtags"
+            }
+            return "Users"
+        } else {
+            return nil
+        }
+    }
+
+  
 }
