@@ -14,7 +14,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
    
-    func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
      
         document = documentInstance()
@@ -23,25 +23,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
 
-    func applicationWillResignActive(application: UIApplication) {
+    func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
     }
 
-    func applicationDidEnterBackground(application: UIApplication) {
+    func applicationDidEnterBackground(_ application: UIApplication) {
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
     }
 
-    func applicationWillEnterForeground(application: UIApplication) {
+    func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
     }
 
-    func applicationDidBecomeActive(application: UIApplication) {
+    func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
     }
 
-    func applicationWillTerminate(application: UIApplication) {
+    func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
     
@@ -52,9 +52,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func documentInstance() -> UIManagedDocument {
         var document: UIManagedDocument?
         
-        let fm = NSFileManager.defaultManager()
-        if let docsDir = fm.URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first {
-            let url = docsDir.URLByAppendingPathComponent("MyDocumentName")
+        let fm = FileManager.default
+        if let docsDir = fm.urls(for: .documentDirectory, in: .userDomainMask).first {
+            let url = docsDir.appendingPathComponent("MyDocumentName")
             document = UIManagedDocument(fileURL: url)
         }
         return document!
@@ -65,18 +65,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         //Before you use a UIManagedDocument, you have to check to see if it’s open or not.
         //If it is already open (in the .Normal state), you are good to go using the managedObjectContext
-        if document.documentState == .Normal {
+        if document.documentState == UIDocumentState() {
             print("document is opend")
         }
         //If it’s .Closed, need to open/create documen
-        if document.documentState == .Closed {
+        if document.documentState == .closed {
             //... you need to open (or create) it.
             //To do that, check to see if the UIManagedDocument’s underlying file exists on disk ...
             let path = document.fileURL.path
-            let fileExists = NSFileManager.defaultManager().fileExistsAtPath(path!)
+            let fileExists = FileManager.default.fileExists(atPath: path)
             if fileExists {
                 //... if it does exist, open the document using ...
-                document.openWithCompletionHandler { (success: Bool) in
+                document.open { (success: Bool) in
                     if (success) {
                         print("open success")
                     } else {
@@ -85,7 +85,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 }
             } else {
                 //... if it does not exist, create the document using ...
-                document.saveToURL(document.fileURL, forSaveOperation: .ForCreating) { success in
+                document.save(to: document.fileURL, for: .forCreating) { success in
                     if (success) {
                         print("create success")
                     } else {

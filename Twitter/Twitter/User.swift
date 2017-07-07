@@ -3,30 +3,30 @@
 //  Twitter
 //
 //  Created by CS193p Instructor.
-//  Copyright (c) 2015 Stanford University. All rights reserved.
+//  Copyright (c) 2015-17 Stanford University. All rights reserved.
 //
 
 import Foundation
 
 // container to hold data about a Twitter user
 
-public class User: NSObject
+public struct User: CustomStringConvertible
 {
     public let screenName: String
     public let name: String
     public let id: String
     public let verified: Bool
-    public let profileImageURL: NSURL?
+    public let profileImageURL: URL?
     
-    public override var description: String { return "@\(screenName) (\(name))\(verified ? " ✅" : "")" }
+    public var description: String { return "@\(screenName) (\(name))\(verified ? " ✅" : "")" }
     
     // MARK: - Internal Implementation
     
     init?(data: NSDictionary?) {
         guard
-            let screenName = data?.valueForKeyPath(TwitterKey.ScreenName) as? String,
-            let name = data?.valueForKeyPath(TwitterKey.Name) as? String,
-            let id = data?.valueForKeyPath(TwitterKey.ID) as? String
+            let screenName = data?.string(forKeyPath: TwitterKey.screenName),
+            let name = data?.string(forKeyPath: TwitterKey.name),
+            let id = data?.string(forKeyPath: TwitterKey.identifier)
         else {
             return nil
         }
@@ -34,27 +34,25 @@ public class User: NSObject
         self.screenName = screenName
         self.name = name
         self.id = id
-
-        self.verified = data?.valueForKeyPath(TwitterKey.Verified)?.boolValue ?? false
-        let urlString = data?.valueForKeyPath(TwitterKey.ProfileImageURL) as? String ?? ""
-        self.profileImageURL = (urlString.characters.count > 0) ? NSURL(string: urlString) : nil
+        self.verified = data?.bool(forKeyPath: TwitterKey.verified) ?? false
+        self.profileImageURL = data?.url(forKeyPath: TwitterKey.profileImageURL)
     }
     
-    var asPropertyList: AnyObject {
+    var asPropertyList: [String:String] {
         return [
-            TwitterKey.Name:name,
-            TwitterKey.ScreenName:screenName,
-            TwitterKey.ID:id,
-            TwitterKey.Verified:verified ? "YES" : "NO",
-            TwitterKey.ProfileImageURL:profileImageURL?.absoluteString ?? ""
+            TwitterKey.name : name,
+            TwitterKey.screenName : screenName,
+            TwitterKey.identifier : id,
+            TwitterKey.verified : verified ? "YES" : "NO",
+            TwitterKey.profileImageURL : profileImageURL?.absoluteString ?? ""
         ]
     }
     
     struct TwitterKey {
-        static let Name = "name"
-        static let ScreenName = "screen_name"
-        static let ID = "id_str"
-        static let Verified = "verified"
-        static let ProfileImageURL = "profile_image_url"
+        static let name = "name"
+        static let screenName = "screen_name"
+        static let identifier = "id_str"
+        static let verified = "verified"
+        static let profileImageURL = "profile_image_url"
     }
 }

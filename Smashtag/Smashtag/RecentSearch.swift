@@ -12,65 +12,65 @@ import UIKit
 
 struct RecentSearch {
     
-    private static let defaults = NSUserDefaults.standardUserDefaults()
+    fileprivate static let defaults = UserDefaults.standard
     
-    private struct Constants {
+    fileprivate struct Constants {
         static let numberOfSerchLimit = 100
         static let searchKey = "SearchHistory"
     }
     
     static var recentSearch: [String] {
-        return defaults.objectForKey(Constants.searchKey) as? [String] ?? []
+        return defaults.object(forKey: Constants.searchKey) as? [String] ?? []
     }
     
-    static func add(text: String) {
+    static func add(_ text: String) {
         var list = recentSearch.filter() {
-            return $0.lowercaseString != text.lowercaseString
+            return $0.lowercased() != text.lowercased()
         }
-        list.insert(text, atIndex: 0)
+        list.insert(text, at: 0)
         while list.count > Constants.numberOfSerchLimit {
             deleteSearchTerm(list.last!)
             list.removeLast()
         }
-        defaults.setObject(list, forKey: Constants.searchKey)
+        defaults.set(list, forKey: Constants.searchKey)
     }
     
-    static func removeAtIndex(index: Int) {
+    static func removeAtIndex(_ index: Int) {
         var list = recentSearch
         deleteSearchTerm(list[index])
-        list.removeAtIndex(index)
-        defaults.setObject(list, forKey: Constants.searchKey)
+        list.remove(at: index)
+        defaults.set(list, forKey: Constants.searchKey)
     }
     
-    static func deleteSearchTerm(searchTerm: String) {
-        let time = NSDate()
-        let managedObjectContext = (UIApplication.sharedApplication().delegate as? AppDelegate)?.document.managedObjectContext
+    static func deleteSearchTerm(_ searchTerm: String) {
+        let time = Date()
+        let managedObjectContext = (UIApplication.shared.delegate as? AppDelegate)?.document.managedObjectContext
         // tweet
-        let fetchRequest = NSFetchRequest(entityName: "Tweet")
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Tweet")
         fetchRequest.predicate = NSPredicate(format: "searchTerm =[c] %@", searchTerm)
         let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
         // mention
-        let mentionRequest = NSFetchRequest(entityName: "Mention")
+        let mentionRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Mention")
         mentionRequest.predicate = NSPredicate(format: "searchTerm =[c] %@", searchTerm)
         let deleteMentionRequest = NSBatchDeleteRequest(fetchRequest: mentionRequest)
         
         // perform the batch delete
         do {
-            try managedObjectContext?.executeRequest(deleteRequest)
-            try managedObjectContext?.executeRequest(deleteMentionRequest)
+            try managedObjectContext?.execute(deleteRequest)
+            try managedObjectContext?.execute(deleteMentionRequest)
             try managedObjectContext?.save()
         } catch let error {
             print("Core Data Error: \(error)")
         }
-        print("Time to delete with batch request: \(NSDate().timeIntervalSinceDate(time))")
+        print("Time to delete with batch request: \(Date().timeIntervalSince(time))")
         //updateUI()
        
         // show searchterms in database
-        let request = NSFetchRequest(entityName: "Tweet")
-        request.resultType = .DictionaryResultType
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Tweet")
+        request.resultType = .dictionaryResultType
         request.returnsDistinctResults = true
         request.propertiesToFetch = ["searchTerm"]
-        if let results = try? managedObjectContext!.executeFetchRequest(request) {
+        if let results = try? managedObjectContext!.fetch(request) {
             for obj in results {
                 print((obj as! NSDictionary).allValues)
             }

@@ -8,14 +8,38 @@
 
 import UIKit
 import CoreData
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
+
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l > r
+  default:
+    return rhs < lhs
+  }
+}
+
 
 class TweetersTableViewController: CoreDataTableViewController {
     var searchTerm: String? { didSet { title = searchTerm } }
     var managedObjectContext: NSManagedObjectContext? { didSet { updateUI() } }
     
-    private func updateUI() {
-        if let context = managedObjectContext where searchTerm?.characters.count > 0 {
-            let request = NSFetchRequest(entityName: "Mention")
+    fileprivate func updateUI() {
+        if let context = managedObjectContext, searchTerm?.characters.count > 0 {
+            let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Mention")
             request.predicate = NSPredicate(format: "searchTerm =[c] %@ and tweetCount > 1", searchTerm!)
             let tweetCountSort = NSSortDescriptor(
                 key: "tweetCount",
@@ -49,14 +73,14 @@ class TweetersTableViewController: CoreDataTableViewController {
     // the most important call is fetchedResultsController?.objectAtIndexPath(indexPath)
     // (that's how we get the object that is in this row so we can load the cell up)
     
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("MentionCell", forIndexPath: indexPath)
-        if let tweetMention = fetchedResultsController?.objectAtIndexPath(indexPath) as? Mention {
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "MentionCell", for: indexPath)
+        if let tweetMention = fetchedResultsController?.object(at: indexPath) as? Mention {
             var mention: String?
             var count: Int?
-            tweetMention.managedObjectContext?.performBlockAndWait {
+            tweetMention.managedObjectContext?.performAndWait {
                 mention = tweetMention.keyWord! + tweetMention.prefix!
-                count = tweetMention.tweetCount?.integerValue
+                count = tweetMention.tweetCount?.intValue
             }
             cell.textLabel?.text = mention
             if let count = count {
@@ -67,8 +91,8 @@ class TweetersTableViewController: CoreDataTableViewController {
         return cell
     }
     
-    override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        if let sections = fetchedResultsController?.sections where sections.count > 0 {
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        if let sections = fetchedResultsController?.sections, sections.count > 0 {
             if sections[section].name == "#" {
                 return "Hashtags"
             }

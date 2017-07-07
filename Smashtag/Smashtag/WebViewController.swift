@@ -27,23 +27,23 @@ class WebViewController: UIViewController, UIWebViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        if let url = NSURL(string: urlString!) {
-            let request = NSURLRequest(URL: url)
+        if let url = URL(string: urlString!) {
+            let request = URLRequest(url: url)
             webView.loadRequest(request)
         }
     }
 
-    func webViewDidStartLoad(webView: UIWebView) {
+    func webViewDidStartLoad(_ webView: UIWebView) {
         spinner.startAnimating()
         print("start")
     }
     
-    func webViewDidFinishLoad(webView: UIWebView) {
+    func webViewDidFinishLoad(_ webView: UIWebView) {
         spinner.stopAnimating()
         print("finish")
     }
     
-    func webView(webView: UIWebView, didFailLoadWithError error: NSError?) {
+    func webView(_ webView: UIWebView, didFailLoadWithError error: Error) {
         spinner.stopAnimating()
         print("err")
     }

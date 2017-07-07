@@ -8,29 +8,29 @@
 
 import UIKit
 
-class ImageCache: NSCache {
+class ImageCache: NSCache<AnyObject, AnyObject> {
     
     
     
-    func getImageByURL(url: NSURL, completion: (image: UIImage?) -> ()) {
+    func getImageByURL(_ url: URL, completion: @escaping (_ image: UIImage?) -> ()) {
         // get from cache
-        if let imageData = self.objectForKey(url) as? NSData {
+        if let imageData = self.object(forKey: url as AnyObject) as? Data {
             let image = UIImage(data: imageData)
-            dispatch_async(dispatch_get_main_queue()) {
-                completion(image: image)
+            DispatchQueue.main.async {
+                completion(image)
             }
 
             return
         }
         // get from network
-        dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0)) {
-            let data = NSData(contentsOfURL: url)
+        DispatchQueue.global(qos: DispatchQoS.QoSClass.userInitiated).async {
+            let data = try? Data(contentsOf: url)
             if let imageData = data {
-                self.setObject(imageData, forKey: url, cost: imageData.length) // cost is bytes
+                self.setObject(imageData as AnyObject, forKey: url as AnyObject, cost: imageData.count) // cost is bytes
                 //print("\(url.absoluteString) \(imageData.length)")
                 let image = UIImage(data: imageData)
-                dispatch_async(dispatch_get_main_queue()) {
-                    completion(image: image)
+                DispatchQueue.main.async {
+                    completion(image)
                 }
             }
         }

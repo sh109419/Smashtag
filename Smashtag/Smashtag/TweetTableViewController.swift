@@ -13,7 +13,7 @@ import CoreData
 class TweetTableViewController: UITableViewController, UITextFieldDelegate {
 
     // MARK: model
-    private var tweets = [Array<Twitter.Tweet>]() {// array of array of tweet // [tweet]
+    fileprivate var tweets = [Array<Twitter.Tweet>]() {// array of array of tweet // [tweet]
         didSet {
             tableView.reloadData()
         }
@@ -21,7 +21,7 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate {
     
     var searchText: String? {
         didSet {
-            guard let text = searchText where !text.isEmpty else {
+            guard let text = searchText, !text.isEmpty else {
                 return
             }
             tweets.removeAll()
@@ -34,41 +34,41 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate {
     
    
     // MARK: Constants
-    private struct Constants {
+    fileprivate struct Constants {
         static let numberOfTweets = 100
     }
    
     // MARK: Fetching Tweets
-    private var twitterRequest: Twitter.Request? {
+    fileprivate var twitterRequest: Twitter.Request? {
         if lastTwitterRequest == nil {
-            if let query = searchText where !query.isEmpty {
+            if let query = searchText, !query.isEmpty {
                 //return Twitter.Request(search: query + " -filter:retweets", count: Constants.numberOfTweets)
                 //When you click on a user in the Users section, search not only for Tweets that mention that user, but also for Tweets which were posted by that user.
                 //https://twitter.com/search-home#
                 var searchKeyword = query
                 if query.hasPrefix("@") {
-                    searchKeyword = query.stringByTrimmingCharactersInSet(NSCharacterSet(charactersInString: "@"))
+                    searchKeyword = query.trimmingCharacters(in: CharacterSet(charactersIn: "@"))
                     searchKeyword = "from:\(searchKeyword) OR \(query)"
                     //print(searchKeyword)
                 }
                 return Twitter.Request(search: searchKeyword + " -filter:retweets", count: Constants.numberOfTweets)
             }
         }
-        return lastTwitterRequest?.requestForNewer
+        return lastTwitterRequest?.newer
         
     }
     
-    private var lastTwitterRequest: Twitter.Request?
+    fileprivate var lastTwitterRequest: Twitter.Request?
     
-    private func searchForTweets() {
+    fileprivate func searchForTweets() {
         if let request = twitterRequest {
             refreshControl?.beginRefreshing()
             lastTwitterRequest = request
             request.fetchTweets { [weak weakSelf = self] newTweets in
-                dispatch_async(dispatch_get_main_queue()) {
+                DispatchQueue.main.async {
                     if request == weakSelf?.lastTwitterRequest {
                         if !newTweets.isEmpty {
-                            weakSelf?.tweets.insert(newTweets, atIndex: 0)
+                            weakSelf?.tweets.insert(newTweets, at: 0)
                             weakSelf?.updateDatabase(newTweets)
                         }
                     }
@@ -81,9 +81,9 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate {
     }
     
     // add the Twitter.Tweets to our database
-    private func updateDatabase(newTweets: [Twitter.Tweet]) {
-        let managedObjectContext: NSManagedObjectContext? = (UIApplication.sharedApplication().delegate as? AppDelegate)?.document.managedObjectContext
-        managedObjectContext?.performBlock {
+    fileprivate func updateDatabase(_ newTweets: [Twitter.Tweet]) {
+        let managedObjectContext: NSManagedObjectContext? = (UIApplication.shared.delegate as? AppDelegate)?.document.managedObjectContext
+        managedObjectContext?.perform {
             for twitterInfo in newTweets {
                 _ = Tweet.tweetWithTwitterInfo(self.searchText!, twitterInfo: twitterInfo, inManagedObjectContext: managedObjectContext!)
             }
@@ -98,20 +98,26 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate {
         print("done printing database statistics")
     }
 
-    private func printDatabaseStatistics() {
-        let managedObjectContext: NSManagedObjectContext? = (UIApplication.sharedApplication().delegate as? AppDelegate)?.document.managedObjectContext
+    fileprivate func printDatabaseStatistics() {
+        let managedObjectContext: NSManagedObjectContext? = (UIApplication.shared.delegate as? AppDelegate)?.document.managedObjectContext
         //managedObjectContext?.performBlock {
-            if let results = try? managedObjectContext!.executeFetchRequest(NSFetchRequest(entityName: "Mention")) {
+            if let results = try? managedObjectContext!.fetch(NSFetchRequest(entityName: "Mention")) {
                 print("\(results.count) TwitterMentions")
             }
-            let tweetCount = managedObjectContext!.countForFetchRequest(NSFetchRequest(entityName: "Tweet"), error: nil)
-            print("\(tweetCount) Tweets")
+        do {
+            if let tweetCount = try managedObjectContext!.count(for: NSFetchRequest(entityName: "Tweet")) as Int? {
+               print("\(tweetCount) Tweets")
+            }
+        } catch let error as NSError {
+                print(error)
+            }
+        
             // show searchterms in database
-            let request = NSFetchRequest(entityName: "Tweet")
-            request.resultType = .DictionaryResultType
+            let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Tweet")
+            request.resultType = .dictionaryResultType
             request.returnsDistinctResults = true
             request.propertiesToFetch = ["searchTerm"]
-            if let results = try? managedObjectContext!.executeFetchRequest(request) {
+            if let results = try? managedObjectContext!.fetch(request) {
                 for obj in results {
                     print((obj as! NSDictionary).allValues)
                 }
@@ -120,7 +126,7 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate {
     }
     
     
-    @IBAction func refresh(sender: UIRefreshControl) {
+    @IBAction func refresh(_ sender: UIRefreshControl) {
         searchForTweets()
     }
     
@@ -139,19 +145,19 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate {
     
     // MARK: - Table view data source
     
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    override func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
         return tweets.count
     }
 
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
         return tweets[section].count
     }
 
     
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier(Storyboard.TweetCellIdentifier, forIndexPath: indexPath)
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: Storyboard.TweetCellIdentifier, for: indexPath)
 
         // Configure the cell...
         let tweet = tweets[indexPath.section][indexPath.row]
@@ -162,7 +168,7 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate {
     }
     
     // MARK: constants
-    private struct Storyboard {
+    fileprivate struct Storyboard {
         static let TweetCellIdentifier = "Tweet"
         static let MentionsSegueIdentifier = "show mentions"
         static let ImagesSegueIdentifier = "show images"
@@ -177,7 +183,7 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate {
     }
     
     // MARK: UITextFieldDelegte
-    func textFieldShouldReturn(textField: UITextField) -> Bool {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         searchText = textField.text
         return true
@@ -186,12 +192,12 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate {
      // MARK: - Navigation
      
      // In a storyboard-based application, you will often want to do a little preparation before navigation
-     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
      // Get the new view controller using segue.destinationViewController.
      // Pass the selected object to the new view controller.
                
         if segue.identifier == Storyboard.MentionsSegueIdentifier {
-            if let destination = segue.destinationViewController as? MentionsTableViewController {
+            if let destination = segue.destination as? MentionsTableViewController {
                 if let cell = sender as? TweetTableViewCell {
                     destination.tweet = cell.tweet
                 }
@@ -199,7 +205,7 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate {
 
         }
         if segue.identifier == Storyboard.ImagesSegueIdentifier {
-            if let destination = segue.destinationViewController as? MediaCollectionViewController{
+            if let destination = segue.destination as? MediaCollectionViewController{
                 var tweetList: [Twitter.Tweet] = []
                 for tweetByOneUser in tweets {
                     for tweet in tweetByOneUser {

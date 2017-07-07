@@ -3,7 +3,7 @@
 //  Twitter
 //
 //  Created by CS193p Instructor.
-//  Copyright (c) 2015 Stanford University. All rights reserved.
+//  Copyright (c) 2015-17 Stanford University. All rights reserved.
 //
 
 import Foundation
@@ -11,21 +11,20 @@ import Foundation
 // holds the network url and aspectRatio of an image attached to a Tweet
 // created automatically when a Tweet object is created
 
-public class MediaItem: NSObject
+public struct MediaItem: CustomStringConvertible
 {
-    public let url: NSURL
+    public let url: URL
     public let aspectRatio: Double
     
-    public override var description: String { return "\(url.absoluteString) (aspect ratio = \(aspectRatio))" }
+    public var description: String { return "\(url.absoluteString) (aspect ratio = \(aspectRatio))" }
     
     // MARK: - Internal Implementation
     
     init?(data: NSDictionary?) {
         guard
-            let height = data?.valueForKeyPath(TwitterKey.Height) as? Double where height > 0,
-            let width = data?.valueForKeyPath(TwitterKey.Width) as? Double where width > 0,
-            let urlString = data?.valueForKeyPath(TwitterKey.MediaURL) as? String,
-            let url = NSURL(string: urlString)
+            let height = data?.double(forKeyPath: TwitterKey.height), height > 0,
+            let width = data?.double(forKeyPath: TwitterKey.width), width > 0,
+            let url = data?.url(forKeyPath: TwitterKey.mediaURL)
         else {
             return nil
         }
@@ -34,8 +33,8 @@ public class MediaItem: NSObject
     }
     
     struct TwitterKey {
-        static let MediaURL = "media_url_https"
-        static let Width = "sizes.small.w"
-        static let Height = "sizes.small.h"
+        static let mediaURL = "media_url_https"
+        static let width = "sizes.small.w"
+        static let height = "sizes.small.h"
     }
 }

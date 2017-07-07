@@ -22,7 +22,7 @@ class TweetTableViewCell: UITableViewCell {
         }
     }
     
-    private func updateUI()
+    fileprivate func updateUI()
     {
         // reset any existing tweet information
         tweetTextLabel?.attributedText = nil
@@ -47,9 +47,9 @@ class TweetTableViewCell: UITableViewCell {
             tweetScreenNameLabel?.text = "\(tweet.user)" // tweet.user.description
             
             if let profileImageURL = tweet.user.profileImageURL {
-                dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0)) {
-                    let imageData = NSData(contentsOfURL: profileImageURL)
-                    dispatch_async(dispatch_get_main_queue()) {
+                DispatchQueue.global(qos: DispatchQoS.QoSClass.userInitiated).async {
+                    let imageData = try? Data(contentsOf: profileImageURL)
+                    DispatchQueue.main.async {
                         if profileImageURL == self.tweet?.user.profileImageURL {
                             if imageData != nil {
                                 self.tweetProfileImageView?.image = UIImage(data: imageData!)
@@ -61,21 +61,21 @@ class TweetTableViewCell: UITableViewCell {
             }
             
                 
-            let formatter = NSDateFormatter()
-            if NSDate().timeIntervalSinceDate(tweet.created) > 24*60*60 {
-                formatter.dateStyle = NSDateFormatterStyle.ShortStyle
+            let formatter = DateFormatter()
+            if Date().timeIntervalSince(tweet.created) > 24*60*60 {
+                formatter.dateStyle = DateFormatter.Style.short
             } else {
-                formatter.timeStyle = NSDateFormatterStyle.ShortStyle
+                formatter.timeStyle = DateFormatter.Style.short
             }
-            tweetCreatedLabel?.text = formatter.stringFromDate(tweet.created)
+            tweetCreatedLabel?.text = formatter.string(from: tweet.created)
         }
         
     }
     
-    private struct MentionColor {
-        static let user = UIColor.purpleColor()
-        static let hashtag = UIColor.brownColor()
-        static let url = UIColor.blueColor()
+    fileprivate struct MentionColor {
+        static let user = UIColor.purple
+        static let hashtag = UIColor.brown
+        static let url = UIColor.blue
     }
 
     /*
@@ -114,7 +114,7 @@ class TweetTableViewCell: UITableViewCell {
     }
 */
     
-    private func getColorfulAttributedText(tweet: Twitter.Tweet, plainText: String) -> NSAttributedString {
+    fileprivate func getColorfulAttributedText(_ tweet: Twitter.Tweet, plainText: String) -> NSAttributedString {
         let attributedString = NSMutableAttributedString(string: plainText)
         attributedString.setMentionsColor(tweet.userMentions, color: MentionColor.user)
         attributedString.setMentionsColor(tweet.hashtags, color: MentionColor.hashtag)
@@ -124,7 +124,7 @@ class TweetTableViewCell: UITableViewCell {
 }
 
 private extension NSMutableAttributedString {
-    func setMentionsColor(mentions: [Twitter.Mention], color: UIColor) {
+    func setMentionsColor(_ mentions: [Twitter.Mention], color: UIColor) {
         for mention in mentions {
             addAttribute(NSForegroundColorAttributeName, value: color, range: mention.nsrange)
         }

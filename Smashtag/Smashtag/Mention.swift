@@ -16,19 +16,19 @@ class Mention: NSManagedObject {
 
     // the primary key is searchTerm + mention
     
-    class func mentionWithTwitterInfo(searchTerm: String, twitterInfo: Twitter.Mention, inManagedObjectContext context: NSManagedObjectContext) -> Mention? {
-        let request = NSFetchRequest(entityName: "Mention")
+    class func mentionWithTwitterInfo(_ searchTerm: String, twitterInfo: Twitter.Mention, inManagedObjectContext context: NSManagedObjectContext) -> Mention? {
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Mention")
         request.predicate = NSPredicate(format: "searchTerm =[c] %@ and keyWord = %@", searchTerm, twitterInfo.keyword)
         
-        if let mention = (try? context.executeFetchRequest(request))?.first as? Mention {
-            mention.tweetCount = NSNumber(integer: mention.tweetCount!.integerValue + 1)
+        if let mention = (try? context.fetch(request))?.first as? Mention {
+            mention.tweetCount = NSNumber(value: mention.tweetCount!.intValue + 1 as Int)
             return mention
-        } else if let mention = NSEntityDescription.insertNewObjectForEntityForName("Mention", inManagedObjectContext: context) as? Mention {
+        } else if let mention = NSEntityDescription.insertNewObject(forEntityName: "Mention", into: context) as? Mention {
             mention.searchTerm = searchTerm
             mention.keyWord = twitterInfo.keyword
             mention.keyWordWithoutPrefix = String(twitterInfo.keyword.characters.dropFirst())
-            mention.prefix = twitterInfo.keyword.substringToIndex(twitterInfo.keyword.startIndex.successor())
-            mention.tweetCount = NSNumber(integer: 1)
+            mention.prefix = twitterInfo.keyword.substring(to: twitterInfo.keyword.characters.index(after: twitterInfo.keyword.startIndex))
+            mention.tweetCount = NSNumber(value: 1 as Int)
             return mention
         }
         

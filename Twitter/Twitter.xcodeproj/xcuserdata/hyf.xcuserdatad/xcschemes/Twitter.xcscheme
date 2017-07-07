@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0730"
+   LastUpgradeVersion = "0820"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "DAB79D141BD20B7900448104"
+               BlueprintIdentifier = "DA1365701E4F8BE000F66D3D"
                BuildableName = "Twitter.framework"
                BlueprintName = "Twitter"
                ReferencedContainer = "container:Twitter.xcodeproj">
@@ -45,7 +45,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "DAB79D141BD20B7900448104"
+            BlueprintIdentifier = "DA1365701E4F8BE000F66D3D"
             BuildableName = "Twitter.framework"
             BlueprintName = "Twitter"
             ReferencedContainer = "container:Twitter.xcodeproj">
@@ -63,7 +63,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "DAB79D141BD20B7900448104"
+            BlueprintIdentifier = "DA1365701E4F8BE000F66D3D"
             BuildableName = "Twitter.framework"
             BlueprintName = "Twitter"
             ReferencedContainer = "container:Twitter.xcodeproj">

@@ -11,26 +11,26 @@ import CoreData
 
 class RecentSearchTableViewController: UITableViewController {
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
         tableView.reloadData()
     }
 
     // MARK: - Table view data source
 
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    override func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
         return 1
     }
 
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
         return RecentSearch.recentSearch.count
     }
 
     
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath)
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
         
         // Configure the cell...
         cell.textLabel?.text = RecentSearch.recentSearch[indexPath.row]
@@ -39,17 +39,17 @@ class RecentSearchTableViewController: UITableViewController {
     }
  
     // Override to support editing the table view.
-    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        if editingStyle == .Delete {
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
             // Delete the row from the data source
             RecentSearch.removeAtIndex(indexPath.row)
-            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-        } else if editingStyle == .Insert {
+            tableView.deleteRows(at: [indexPath], with: .fade)
+        } else if editingStyle == .insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
         }    
     }
 
-    private struct Storyboard {
+    fileprivate struct Storyboard {
         static let ShowMentionDetailSegueIdentifier = "show mention detail"
         static let SearchMentionAgainSegueIdentifier = "search mention again"
     }
@@ -57,22 +57,22 @@ class RecentSearchTableViewController: UITableViewController {
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
         if segue.identifier == Storyboard.SearchMentionAgainSegueIdentifier {
-            if let destination = segue.destinationViewController as? TweetTableViewController {
+            if let destination = segue.destination as? TweetTableViewController {
                 if let cell = sender as? UITableViewCell {
                     destination.searchText = cell.textLabel?.text
                 }
             }
         }
         if segue.identifier == Storyboard.ShowMentionDetailSegueIdentifier {
-            if let tweetersTVC = segue.destinationViewController as? TweetersTableViewController {
+            if let tweetersTVC = segue.destination as? TweetersTableViewController {
                 if let cell = sender as? UITableViewCell {
                     tweetersTVC.searchTerm = cell.textLabel?.text
                 }
-                 let managedObjectContext: NSManagedObjectContext? = (UIApplication.sharedApplication().delegate as? AppDelegate)?.document.managedObjectContext
+                 let managedObjectContext: NSManagedObjectContext? = (UIApplication.shared.delegate as? AppDelegate)?.document.managedObjectContext
                 tweetersTVC.managedObjectContext = managedObjectContext
             }
             

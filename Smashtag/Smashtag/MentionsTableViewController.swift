@@ -20,34 +20,34 @@ class MentionsTableViewController: UITableViewController {
         }
     }
     
-    private var sections = [Section]()// medias & mentions
+    fileprivate var sections = [Section]()// medias & mentions
     
-    private struct Section {
+    fileprivate struct Section {
         var title: String
         var items: [Item]
     }
     
-    private enum Item {
+    fileprivate enum Item {
         case media(MediaItem)//(NSURL, Double)
         case mention(String)//(String)
         var data: AnyObject {
             switch self {
             case .media(let media):
-                return media
+                return media as AnyObject
             case .mention(let mention):
-                return mention
+                return mention as AnyObject
             }
         }
     }
     
-    private struct SectionTitle {
+    fileprivate struct SectionTitle {
         static let image = "Images"
         static let hashtag = " Hashtags"
         static let user = "Users"
         static let url = "Urls"
     }
     
-    private func prepareSectionDataset() {
+    fileprivate func prepareSectionDataset() {
         if let tweet = self.tweet {
             if tweet.media.count > 0 {
                 sections.append(Section(title: SectionTitle.image, items: tweet.media.map {Item.media($0)} ))
@@ -70,21 +70,21 @@ class MentionsTableViewController: UITableViewController {
     
     // MARK: - Table view data source
 
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    override func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
         return sections.count
     }
 
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
         return sections[section].items.count
     }
 
-    override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         return sections[section].title
     }
     
-    private struct Storyboard {
+    fileprivate struct Storyboard {
         static let MentionCellIdentifier = "Mention"
         static let MediaCellIdentifier = "Media"
         // segue
@@ -93,27 +93,27 @@ class MentionsTableViewController: UITableViewController {
         static let URLSegueIdentifier = "show url"
     }
     
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let itemData = sections[indexPath.section].items[indexPath.row].data
         if itemData is Twitter.MediaItem {
-            let cell = tableView.dequeueReusableCellWithIdentifier(Storyboard.MediaCellIdentifier, forIndexPath: indexPath)
+            let cell = tableView.dequeueReusableCell(withIdentifier: Storyboard.MediaCellIdentifier, for: indexPath)
             if let mediaCell = cell as? MentionsTableViewCell {
                 mediaCell.imageURL = (itemData as? Twitter.MediaItem)?.url
             }
             return cell
         } else {
-            let cell = tableView.dequeueReusableCellWithIdentifier(Storyboard.MentionCellIdentifier, forIndexPath: indexPath)
+            let cell = tableView.dequeueReusableCell(withIdentifier: Storyboard.MentionCellIdentifier, for: indexPath)
             cell.textLabel?.text = itemData as? String
             return cell
         }
         
     }
 
-    override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let item = sections[indexPath.section].items[indexPath.row]
         switch item {
         case .media(let media):
-            let currentOrient = UIApplication.sharedApplication().statusBarOrientation
+            let currentOrient = UIApplication.shared.statusBarOrientation
             if currentOrient.isLandscape == true {
                 //Get frame height without navigation bar height and tab bar height 
                 let tabBarHeight = self.tabBarController?.tabBar.frame.size.height ?? 0.0
@@ -127,21 +127,21 @@ class MentionsTableViewController: UITableViewController {
     }
     
     // navigation from table
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let item = sections[indexPath.section].items[indexPath.row]
-        let cell = tableView.cellForRowAtIndexPath(indexPath)
+        let cell = tableView.cellForRow(at: indexPath)
         switch item {
         case .media(_):
             if cell is MentionsTableViewCell {
                 if (cell as! MentionsTableViewCell).mediaImageView.image != nil {
-                    performSegueWithIdentifier(Storyboard.MediaSegueIdentifier, sender: cell)
+                    performSegue(withIdentifier: Storyboard.MediaSegueIdentifier, sender: cell)
                 }
             }
         case .mention(let mention):
             if mention.hasPrefix("http") == true {
-                performSegueWithIdentifier(Storyboard.URLSegueIdentifier, sender: cell)
+                performSegue(withIdentifier: Storyboard.URLSegueIdentifier, sender: cell)
             } else {
-                performSegueWithIdentifier(Storyboard.MentionSegueIdentifier, sender: cell)
+                performSegue(withIdentifier: Storyboard.MentionSegueIdentifier, sender: cell)
             }
         }
     }
@@ -149,18 +149,18 @@ class MentionsTableViewController: UITableViewController {
     // MARK: - Navigation
     
     // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
         if segue.identifier == Storyboard.MentionSegueIdentifier {
-            if let destination = segue.destinationViewController as? TweetTableViewController {
+            if let destination = segue.destination as? TweetTableViewController {
                 if let cell = sender as? UITableViewCell {
                     destination.searchText = cell.textLabel?.text
                 }
             }
         }
         if segue.identifier == Storyboard.MediaSegueIdentifier {
-            if let destination = segue.destinationViewController as? ImageViewController {
+            if let destination = segue.destination as? ImageViewController {
                 if let cell = sender as? MentionsTableViewCell {
                     destination.image = cell.mediaImageView.image
                     destination.title = cell.imageURL?.absoluteString
@@ -168,7 +168,7 @@ class MentionsTableViewController: UITableViewController {
             }
         }
         if segue.identifier == Storyboard.URLSegueIdentifier {
-            if let destination = segue.destinationViewController as? WebViewController {
+            if let destination = segue.destination as? WebViewController {
                 if let cell = sender as? UITableViewCell {
                     destination.urlString = cell.textLabel?.text
                 }

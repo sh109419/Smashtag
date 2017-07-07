@@ -27,7 +27,7 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
         }
     }
     
-    func viewForZoomingInScrollView(scrollView: UIScrollView) -> UIView? {
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return imageView
     }
     

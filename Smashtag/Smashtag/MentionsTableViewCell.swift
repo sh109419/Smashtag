@@ -14,7 +14,7 @@ class MentionsTableViewCell: UITableViewCell {
     @IBOutlet weak var mediaImageView: UIImageView!
     @IBOutlet weak var spinner: UIActivityIndicatorView!
     
-    var imageURL: NSURL? {
+    var imageURL: URL? {
         didSet {
             //updateUI()
             mediaImageView?.image = nil

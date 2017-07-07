@@ -27,23 +27,23 @@ class MediaCollectionViewController: UICollectionViewController{
         }
     }
     
-    private struct TweetMedia {
+    fileprivate struct TweetMedia {
         let media: MediaItem
         let tweetIndex: Int
     }
     
-    private var imageList = [TweetMedia]()
+    fileprivate var imageList = [TweetMedia]()
     
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using [segue destinationViewController].
         // Pass the selected object to the new view controller.
-        collectionView?.indexPathsForSelectedItems()?.first?.item
+        //collectionView?.indexPathsForSelectedItems?.first?.item
         
-        if let destination = segue.destinationViewController as? MentionsTableViewController {
-            if let selectedIndex = collectionView?.indexPathsForSelectedItems()?.first?.item {
+        if let destination = segue.destination as? MentionsTableViewController {
+            if let selectedIndex = collectionView?.indexPathsForSelectedItems?.first?.item {
                 destination.tweet = tweetList[selectedIndex]
             }
         }
@@ -52,28 +52,28 @@ class MediaCollectionViewController: UICollectionViewController{
     
     // MARK: UICollectionViewDataSource
 
-    override func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
+    override func numberOfSections(in collectionView: UICollectionView) -> Int {
         // #warning Incomplete implementation, return the number of sections
         return 1
     }
 
-    override func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of items
         return imageList.count
     }
 
-    override func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier(reuseIdentifier, forIndexPath: indexPath) as! MediaCollectionViewCell
+    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! MediaCollectionViewCell
         cell.mediaItem = imageList[indexPath.item].media
         return cell
     }
     
     // MARK: resize layout
-    override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransitionToSize(size, withTransitionCoordinator: coordinator)
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
         //Change UICollectionViewCell size on different device orientations
-        coordinator.animateAlongsideTransition(
-            { _ in self.refreshLayout(); print("change size") },
+        coordinator.animate(
+            alongsideTransition: { _ in self.refreshLayout(); print("change size") },
             completion: nil
         )
     }
@@ -95,9 +95,9 @@ class MediaCollectionViewController: UICollectionViewController{
     // zoom in show less pictures (landscape: 3 Portrait: 2), but the size of each image becomes bigger
     // zoom out show more pictures (landscape: 4 portrait: 3), but the size of each image becomes smaller
     
-    func changeScale(recognizer: UIPinchGestureRecognizer) {
+    func changeScale(_ recognizer: UIPinchGestureRecognizer) {
         switch recognizer.state {
-        case .Ended:
+        case .ended:
             //updateImagesPerRow(recognizer.scale < 1)
             let showMoreImages = recognizer.scale < 1
             if ((showMoreImages == true) && (isSmallImages == false)) || ((showMoreImages == false) && (isSmallImages == true)) {
@@ -111,14 +111,14 @@ class MediaCollectionViewController: UICollectionViewController{
         }
     }
     
-    private var isSmallImages = false // show more image means zoom out the image
+    fileprivate var isSmallImages = false // show more image means zoom out the image
     
-    private func refreshLayout() {
+    fileprivate func refreshLayout() {
         (collectionViewLayout as? ImageFlowViewLayout)?.numberOfColumns = numberOfColumns
         collectionView?.reloadData()
     }
     
-    private struct Constants {
+    fileprivate struct Constants {
         //static let imageMaxLength = 180.0
         static let bigImageCountPerPortraitRow = 2
         static let bigImageCountPerLandScapeRow = 3
@@ -127,8 +127,8 @@ class MediaCollectionViewController: UICollectionViewController{
     }
     
     // how many images per row
-    private var numberOfColumns: Int {
-        let currentOrient = UIApplication.sharedApplication().statusBarOrientation
+    fileprivate var numberOfColumns: Int {
+        let currentOrient = UIApplication.shared.statusBarOrientation
         var count = currentOrient.isLandscape ? Constants.bigImageCountPerLandScapeRow : Constants.bigImageCountPerPortraitRow
         count += isSmallImages ? 1 : 0
         return count
@@ -139,7 +139,7 @@ class MediaCollectionViewController: UICollectionViewController{
 // MARK: image flow
 extension MediaCollectionViewController: ImageFlowViewLayoutDelegate {
     
-    func collectionView(collectionView:UICollectionView, heightForPhotoAtIndexPath indexPath: NSIndexPath,
+    func collectionView(_ collectionView:UICollectionView, heightForPhotoAtIndexPath indexPath: IndexPath,
                         withWidth width: CGFloat) -> CGFloat {
         let ratio = imageList[indexPath.item].media.aspectRatio
         let height = width / CGFloat(ratio)

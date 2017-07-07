@@ -27,10 +27,10 @@
 		10A773C41DDE9EB300042FDE /* CoreDataTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10A773C31DDE9EB300042FDE /* CoreDataTableViewController.swift */; };
 		10A773D31DE6C5C600042FDE /* Mention+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10A773D11DE6C5C600042FDE /* Mention+CoreDataProperties.swift */; };
 		10A773D41DE6C5C600042FDE /* Mention.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10A773D21DE6C5C600042FDE /* Mention.swift */; };
-		10FB05311DB8A0D0004C7620 /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10FB05301DB8A0D0004C7620 /* Twitter.framework */; };
 		10FB05331DB8B576004C7620 /* TweetTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10FB05321DB8B576004C7620 /* TweetTableViewCell.swift */; };
 		10FB05371DBA563F004C7620 /* MentionsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10FB05361DBA563F004C7620 /* MentionsTableViewCell.swift */; };
 		10FB05391DBA568F004C7620 /* MentionsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10FB05381DBA568F004C7620 /* MentionsTableViewController.swift */; };
+		10FC51C31F0FCEFE00BF454B /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10C6890F1E7832820043E9F1 /* Twitter.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -57,7 +57,7 @@
 		10A773C31DDE9EB300042FDE /* CoreDataTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CoreDataTableViewController.swift; path = Smashtag/Smashtag/CoreDataTableViewController.swift; sourceTree = "<group>"; };
 		10A773D11DE6C5C600042FDE /* Mention+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Mention+CoreDataProperties.swift"; path = "Smashtag/Smashtag/Mention+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		10A773D21DE6C5C600042FDE /* Mention.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Mention.swift; path = Smashtag/Smashtag/Mention.swift; sourceTree = "<group>"; };
-		10FB05301DB8A0D0004C7620 /* Twitter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Twitter.framework; path = "../../../Library/Developer/Xcode/DerivedData/Smashtag_L9-czvynljrpczujoetjvdpzhwrpwjk/Build/Products/Debug-iphoneos/Twitter.framework"; sourceTree = "<group>"; };
+		10C6890F1E7832820043E9F1 /* Twitter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Twitter.framework; path = "../../../Library/Developer/Xcode/DerivedData/Smashtag-gvvbtujorowlfuengxpnnosvvmyv/Build/Products/Debug-iphonesimulator/Twitter.framework"; sourceTree = "<group>"; };
 		10FB05321DB8B576004C7620 /* TweetTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TweetTableViewCell.swift; sourceTree = "<group>"; };
 		10FB05361DBA563F004C7620 /* MentionsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MentionsTableViewCell.swift; sourceTree = "<group>"; };
 		10FB05381DBA568F004C7620 /* MentionsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MentionsTableViewController.swift; sourceTree = "<group>"; };
@@ -68,7 +68,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				10FB05311DB8A0D0004C7620 /* Twitter.framework in Frameworks */,
+				10FC51C31F0FCEFE00BF454B /* Twitter.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,10 +78,10 @@
 		105A7A1D1DB89B3300755BD2 = {
 			isa = PBXGroup;
 			children = (
-				10FB05301DB8A0D0004C7620 /* Twitter.framework */,
 				105A7A281DB89B3300755BD2 /* Smashtag */,
 				105A7A271DB89B3300755BD2 /* Products */,
 				10A7739E1DDD987600042FDE /* Model.xcdatamodeld */,
+				10C6890E1E7832820043E9F1 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -141,6 +141,14 @@
 			path = ../..;
 			sourceTree = "<group>";
 		};
+		10C6890E1E7832820043E9F1 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				10C6890F1E7832820043E9F1 /* Twitter.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -168,11 +176,12 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0730;
-				LastUpgradeCheck = 0730;
+				LastUpgradeCheck = 0820;
 				ORGANIZATIONNAME = hyf;
 				TargetAttributes = {
 					105A7A251DB89B3300755BD2 = {
 						CreatedOnToolsVersion = 7.3.1;
+						LastSwiftMigration = 0820;
 					};
 				};
 			};
@@ -271,8 +280,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -294,7 +305,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -316,8 +327,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -333,9 +346,10 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -348,6 +362,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.hyf.Smashtag;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -359,6 +374,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.hyf.Smashtag;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
